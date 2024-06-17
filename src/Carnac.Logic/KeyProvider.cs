@@ -23,7 +23,8 @@ namespace Carnac.Logic
         readonly IPasswordModeService passwordModeService;
         readonly IDesktopLockEventService desktopLockEventService;
         readonly PopupSettings settings;
-        string currentFilter = null;
+        string   currentFilter = null;
+        Regex    currentRegex  = null;
 
         private static readonly IList<Keys> modifierKeys =
             new List<Keys>
@@ -59,7 +60,6 @@ namespace Carnac.Logic
 
         private bool ShouldFilterProcess(out Regex filterRegex)
         {
-            filterRegex = null;
             if (settings?.ProcessFilterExpression != currentFilter)
             {
                 currentFilter = settings?.ProcessFilterExpression;
@@ -68,19 +68,19 @@ namespace Carnac.Logic
                 {
                     try
                     {
-                        filterRegex = new Regex(currentFilter, RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+                        currentRegex = new Regex(currentFilter, RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
                     }
                     catch
                     {
-                        filterRegex = null;
+                        currentRegex = null;
                     }
                 }
                 else
                 {
-                    filterRegex = null;
+                    currentRegex = null;
                 }
             }
-
+            filterRegex = currentRegex;
             return (filterRegex != null);
         }
 
